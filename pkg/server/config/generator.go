@@ -15,17 +15,6 @@
 package config
 
 import (
-	"encoding/json"
-	"errors"
-	"fmt"
-	"os"
-	"path/filepath"
-	"sort"
-	"strings"
-	"time"
-
-	"github.com/blang/semver"
-
 	"gopkg.in/k8snetworkplumbingwg/multus-cni.v4/pkg/logging"
 )
 
@@ -66,154 +55,43 @@ type MultusConf struct {
 
 // ParseMultusConfig parses multus config from configPath and create MultusConf.
 func ParseMultusConfig(configPath string) (*MultusConf, error) {
-	config, err := os.ReadFile(configPath)
-	if err != nil {
-		return nil, fmt.Errorf("ParseMultusConfig failed to read the config file's contents: %w", err)
-	}
-
-	multusconf := MultusConf{
-		MultusConfigFile: "auto",
-		Type:             multusPluginName,
-		Capabilities:     map[string]bool{},
-		CniConfigDir:     "/etc/cni/net.d",
-	}
-
-	if err := json.Unmarshal(config, &multusconf); err != nil {
-		return nil, fmt.Errorf("failed to unmarshall the daemon configuration: %w", err)
-	}
-	multusconf.Name = MultusDefaultNetworkName // change name
-
-	return &multusconf, nil
+	_ = "STUB: not implemented"
+	return nil, nil
 }
+
+// change name
 
 // CheckVersionCompatibility checks compatibilty of the
 // top level cni version with the delegate cni version.
 // Since version 0.4.0, CHECK was introduced, which
 // causes incompatibility.
 func CheckVersionCompatibility(mc *MultusConf, delegate interface{}) error {
-	const versionFmt = "delegate cni version is %s while top level cni version is %s"
-	v040, _ := semver.Make("0.4.0")
-	multusCNIVersion, err := semver.Make(mc.CNIVersion)
-
-	if err != nil {
-		return errors.New("couldn't get top level cni version")
-	}
-
-	if multusCNIVersion.GTE(v040) {
-		delegatesMap, ok := delegate.(map[string]interface{})
-		if !ok {
-			return errors.New("couldn't get cni version of delegate")
-		}
-		delegateVersion, ok := delegatesMap["cniVersion"].(string)
-		if !ok {
-			return errors.New("couldn't get cni version of delegate")
-		}
-		v, err := semver.Make(delegateVersion)
-		if err != nil {
-			return err
-		}
-		if v.LT(v040) {
-			return fmt.Errorf(versionFmt, delegateVersion, mc.CNIVersion)
-		}
-	}
-
+	_ = "STUB: not implemented"
 	return nil
 }
 
 // Generate generates the multus configuration from whatever state is currently
 // held
 func (mc *MultusConf) Generate() (string, error) {
+	_ = "STUB: not implemented"
 	// before marshal, flush variables which is not required for multus-shim config
-	mc.CniConfigDir = ""
-	mc.MultusConfigFile = ""
-	mc.MultusAutoconfigDir = ""
-	mc.MultusMasterCni = ""
-	mc.ForceCNIVersion = false
-	// Readiness indicator file existence is already handled by the
-	// ConfigManager via an fsnotify watch, so CmdAdd/CmdDel don't need to.
-	mc.ReadinessIndicatorFile = ""
-
-	data, err := json.Marshal(mc)
-	return string(data), err
+	return "", nil
 }
 
+// Readiness indicator file existence is already handled by the
+// ConfigManager via an fsnotify watch, so CmdAdd/CmdDel don't need to.
+
 func (mc *MultusConf) setCapabilities(cniData interface{}) error {
-	var enabledCapabilities []string
-	var pluginsList []interface{}
-	cniDataMap, ok := cniData.(map[string]interface{})
-	if ok {
-		if pluginsListEntry, ok := cniDataMap[configListCapabilityKey]; ok {
-			pluginsList = pluginsListEntry.([]interface{})
-		}
-	} else {
-		return errors.New("couldn't get cni config from delegate")
-	}
-
-	if len(pluginsList) > 0 {
-		for _, pluginData := range pluginsList {
-			enabledCapabilities = append(
-				enabledCapabilities,
-				extractCapabilities(pluginData)...)
-		}
-	} else {
-		enabledCapabilities = extractCapabilities(cniData)
-	}
-
-	for _, capability := range enabledCapabilities {
-		mc.Capabilities[capability] = true
-	}
+	_ = "STUB: not implemented"
 	return nil
 }
 
 func extractCapabilities(capabilitiesInterface interface{}) []string {
-	capabilitiesMap, ok := capabilitiesInterface.(map[string]interface{})
-	if !ok {
-		return nil
-	}
-	capabilitiesMapEntry, ok := capabilitiesMap[singleConfigCapabilityKey]
-	if !ok {
-		return nil
-	}
-	capabilities, ok := capabilitiesMapEntry.(map[string]interface{})
-	if !ok {
-		return nil
-	}
-
-	var enabledCapabilities []string
-	if len(capabilities) > 0 {
-		for capName, isCapabilityEnabled := range capabilities {
-			if isCapabilityEnabled.(bool) {
-				enabledCapabilities = append(enabledCapabilities, capName)
-			}
-		}
-	}
-	return enabledCapabilities
+	_ = "STUB: not implemented"
+	return nil
 }
 
 func findMasterPlugin(cniConfigDirPath string, remainingTries int) (string, error) {
-	if remainingTries == 0 {
-		return "", fmt.Errorf("could not find a plugin configuration in %s", cniConfigDirPath)
-	}
-	var cniPluginConfigs []string
-	files, err := os.ReadDir(cniConfigDirPath)
-	if err != nil {
-		return "", fmt.Errorf("error when listing the CNI plugin configurations: %w", err)
-	}
-
-	for _, file := range files {
-		if strings.HasPrefix(file.Name(), "00-multus") {
-			continue
-		}
-		fileExtension := filepath.Ext(file.Name())
-		if fileExtension == ".conf" || fileExtension == ".conflist" {
-			cniPluginConfigs = append(cniPluginConfigs, file.Name())
-		}
-	}
-
-	if len(cniPluginConfigs) == 0 {
-		time.Sleep(time.Second)
-		return findMasterPlugin(cniConfigDirPath, remainingTries-1)
-	}
-	sort.Strings(cniPluginConfigs)
-	return cniPluginConfigs[0], nil
+	_ = "STUB: not implemented"
+	return "", nil
 }

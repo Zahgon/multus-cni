@@ -16,11 +16,7 @@
 package logging
 
 import (
-	"errors"
-	"fmt"
 	"io"
-	"os"
-	"strings"
 	"time"
 
 	lumberjack "gopkg.in/natefinch/lumberjack.v2"
@@ -56,152 +52,45 @@ type LogOptions struct {
 
 // SetLogOptions set the LoggingOptions of NetConf
 func SetLogOptions(options *LogOptions) {
+	_ = "STUB: not implemented"
 	// logger is used only if filname is supplied
-	if logger == nil || logger.Filename == "" {
-		return
-	}
-
-	// give some default value
-	updatedLogger := lumberjack.Logger{
-		Filename:   logger.Filename,
-		MaxAge:     5,
-		MaxBackups: 5,
-		Compress:   true,
-		MaxSize:    100,
-		LocalTime:  logger.LocalTime,
-	}
-	if options != nil {
-		if options.MaxAge != nil {
-			updatedLogger.MaxAge = *options.MaxAge
-		}
-		if options.MaxSize != nil {
-			updatedLogger.MaxSize = *options.MaxSize
-		}
-		if options.MaxBackups != nil {
-			updatedLogger.MaxBackups = *options.MaxBackups
-		}
-		if options.Compress != nil {
-			updatedLogger.Compress = *options.Compress
-		}
-	}
-	logger = &updatedLogger
-	loggingW = logger
+	return
 }
 
-func (l Level) String() string {
-	switch l {
-	case PanicLevel:
-		return "panic"
-	case VerboseLevel:
-		return "verbose"
-	case ErrorLevel:
-		return "error"
-	case DebugLevel:
-		return "debug"
-	}
-	return "unknown"
-}
+// give some default value
 
-func printf(level Level, format string, a ...interface{}) {
-	header := "%s [%s] "
-	t := time.Now()
-	if level > loggingLevel {
-		return
-	}
+func (l Level) String() string { _ = "STUB: not implemented"; return "" }
 
-	if loggingStderr {
-		fmt.Fprintf(os.Stderr, header, t.Format(defaultTimestampFormat), level)
-		fmt.Fprintf(os.Stderr, format, a...)
-		fmt.Fprintf(os.Stderr, "\n")
-	}
-
-	if loggingW != nil {
-		fmt.Fprintf(loggingW, header, t.Format(defaultTimestampFormat), level)
-		fmt.Fprintf(loggingW, format, a...)
-		fmt.Fprintf(loggingW, "\n")
-	}
-}
+func printf(level Level, format string, a ...interface{}) { _ = "STUB: not implemented"; return }
 
 // Debugf prints logging if logging level >= debug
-func Debugf(format string, a ...interface{}) {
-	printf(DebugLevel, format, a...)
-}
+func Debugf(format string, a ...interface{}) { _ = "STUB: not implemented"; return }
 
 // Verbosef prints logging if logging level >= verbose
-func Verbosef(format string, a ...interface{}) {
-	printf(VerboseLevel, format, a...)
-}
+func Verbosef(format string, a ...interface{}) { _ = "STUB: not implemented"; return }
 
 // Errorf prints logging if logging level >= error
-func Errorf(format string, a ...interface{}) error {
-	printf(ErrorLevel, format, a...)
-	return fmt.Errorf(format, a...)
-}
+func Errorf(format string, a ...interface{}) error { _ = "STUB: not implemented"; return nil }
 
 // Panicf prints logging plus stack trace. This should be used only for unrecoverable error
-func Panicf(format string, a ...interface{}) {
-	printf(PanicLevel, format, a...)
-	printf(PanicLevel, "========= Stack trace output ========")
-	printf(PanicLevel, "%+v", errors.New("Multus Panic"))
-	printf(PanicLevel, "========= Stack trace output end ========")
-}
+func Panicf(format string, a ...interface{}) { _ = "STUB: not implemented"; return }
 
 // GetLoggingLevel gets current logging level
-func GetLoggingLevel() Level {
-	return loggingLevel
-}
+func GetLoggingLevel() Level { _ = "STUB: not implemented"; return *new(Level) }
 
-func getLoggingLevel(levelStr string) Level {
-	switch strings.ToLower(levelStr) {
-	case "debug":
-		return DebugLevel
-	case "verbose":
-		return VerboseLevel
-	case "error":
-		return ErrorLevel
-	case "panic":
-		return PanicLevel
-	}
-	fmt.Fprintf(os.Stderr, "multus logging: cannot set logging level to %s\n", levelStr)
-	return UnknownLevel
-}
+func getLoggingLevel(levelStr string) Level { _ = "STUB: not implemented"; return *new(Level) }
 
 // SetLogLevel sets logging level
-func SetLogLevel(levelStr string) {
-	level := getLoggingLevel(levelStr)
-	if level < MaxLevel {
-		loggingLevel = level
-	}
-}
+func SetLogLevel(levelStr string) { _ = "STUB: not implemented"; return }
 
 // SetLogStderr sets flag for logging stderr output
-func SetLogStderr(enable bool) {
-	loggingStderr = enable
-}
+func SetLogStderr(enable bool) { _ = "STUB: not implemented"; return }
 
 // SetLogFile sets logging file
 func SetLogFile(filename string) {
+	_ = "STUB: not implemented"
 	// logger is used only if filname is supplied
-	if filename == "" {
-		return
-	}
-
-	updatedLogger := lumberjack.Logger{
-		Filename:   filename,
-		MaxAge:     5,
-		MaxBackups: 5,
-		Compress:   true,
-		MaxSize:    100,
-	}
-
-	if logger != nil {
-		updatedLogger.MaxAge = logger.MaxAge
-		updatedLogger.MaxBackups = logger.MaxBackups
-		updatedLogger.Compress = logger.Compress
-		updatedLogger.MaxSize = logger.MaxSize
-	}
-	logger = &updatedLogger
-	loggingW = logger
+	return
 }
 
 func init() {

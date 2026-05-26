@@ -15,70 +15,18 @@
 // Package cmdutils is the package that contains utilities for multus command
 package cmdutils
 
-import (
-	"fmt"
-	"io"
-	"os"
-	"path/filepath"
-)
-
 // CopyFileAtomic does file copy atomically
 func CopyFileAtomic(srcFilePath, destDir, tempFileName, destFileName string) error {
-	tempFilePath := filepath.Join(destDir, tempFileName)
-	// check temp filepath and remove old file if exists
-	if _, err := os.Stat(tempFilePath); err == nil {
-		err = os.Remove(tempFilePath)
-		if err != nil {
-			return fmt.Errorf("cannot remove old temp file %q: %v", tempFilePath, err)
-		}
-	}
-
-	// create temp file
-	f, err := os.CreateTemp(destDir, tempFileName)
-	defer f.Close()
-	if err != nil {
-		return fmt.Errorf("cannot create temp file %q in %q: %v", tempFileName, destDir, err)
-	}
-
-	srcFile, err := os.Open(srcFilePath)
-	if err != nil {
-		return fmt.Errorf("cannot open file %q: %v", srcFilePath, err)
-	}
-	defer srcFile.Close()
-
-	// Copy file to tempfile
-	_, err = io.Copy(f, srcFile)
-	if err != nil {
-		f.Close()
-		os.Remove(tempFilePath)
-		return fmt.Errorf("cannot write data to temp file %q: %v", tempFilePath, err)
-	}
-	if err := f.Sync(); err != nil {
-		return fmt.Errorf("cannot flush temp file %q: %v", tempFilePath, err)
-	}
-	if err := f.Close(); err != nil {
-		return fmt.Errorf("cannot close temp file %q: %v", tempFilePath, err)
-	}
-
-	// change file mode if different
-	destFilePath := filepath.Join(destDir, destFileName)
-	_, err = os.Stat(destFilePath)
-	if err != nil && !os.IsNotExist(err) {
-		return err
-	}
-	srcFileStat, err := os.Stat(srcFilePath)
-	if err != nil {
-		return err
-	}
-
-	if err := os.Chmod(f.Name(), srcFileStat.Mode()); err != nil {
-		return fmt.Errorf("cannot set stat on temp file %q: %v", f.Name(), err)
-	}
-
-	// replace file with tempfile
-	if err := os.Rename(f.Name(), destFilePath); err != nil {
-		return fmt.Errorf("cannot replace %q with temp file %q: %v", destFilePath, tempFilePath, err)
-	}
-
+	_ = "STUB: not implemented"
 	return nil
 }
+
+// check temp filepath and remove old file if exists
+
+// create temp file
+
+// Copy file to tempfile
+
+// change file mode if different
+
+// replace file with tempfile

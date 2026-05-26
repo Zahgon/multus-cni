@@ -14,15 +14,9 @@
 
 package api
 
-import (
-	"path/filepath"
-)
-
 const (
 	serverSocketName = "multus.sock"
 )
 
 // SocketPath returns the path of the multus CNI socket
-func SocketPath(rundir string) string {
-	return filepath.Join(rundir, serverSocketName)
-}
+func SocketPath(rundir string) string { _ = "STUB: not implemented"; return "" }

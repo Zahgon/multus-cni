@@ -2,12 +2,8 @@
 package main
 
 import (
-	"encoding/json"
-	"fmt"
-
 	"github.com/containernetworking/cni/pkg/skel"
 	cniTypes "github.com/containernetworking/cni/pkg/types"
-	current "github.com/containernetworking/cni/pkg/types/100"
 	cniVersion "github.com/containernetworking/cni/pkg/version"
 )
 
@@ -26,33 +22,14 @@ func main() {
 	)
 }
 
-func cmdAdd(args *skel.CmdArgs) error {
-	n, err := loadNetConf(args.StdinData)
-	if err != nil {
-		return fmt.Errorf("passthru cni: error parsing CNI configuration: %s", err)
-	}
+func cmdAdd(args *skel.CmdArgs) error { _ = "STUB: not implemented"; return nil }
 
-	// Create an empty but valid CNI result
-	result := &current.Result{
-		CNIVersion: n.CNIVersion,
-		Interfaces: []*current.Interface{},
-		IPs:        []*current.IPConfig{},
-		Routes:     []*cniTypes.Route{},
-		DNS:        cniTypes.DNS{},
-	}
-
-	return cniTypes.PrintResult(result, n.CNIVersion)
-}
+// Create an empty but valid CNI result
 
 func cmdDel(_ *skel.CmdArgs) error {
+	_ = "STUB: not implemented"
 	// Nothing to do for DEL command, just return nil
 	return nil
 }
 
-func loadNetConf(bytes []byte) (*NetConf, error) {
-	n := &NetConf{}
-	if err := json.Unmarshal(bytes, n); err != nil {
-		return nil, fmt.Errorf("passthru cni: failed to load netconf: %s", err)
-	}
-	return n, nil
-}
+func loadNetConf(bytes []byte) (*NetConf, error) { _ = "STUB: not implemented"; return nil, nil }

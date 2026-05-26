@@ -20,16 +20,10 @@ import (
 	"context"
 	"flag"
 	"fmt"
-	"io"
-	"net/http"
 	"os"
 	"os/signal"
-	"os/user"
-	"path/filepath"
 	"sync"
 	"syscall"
-
-	utilwait "k8s.io/apimachinery/pkg/util/wait"
 
 	"gopkg.in/k8snetworkplumbingwg/multus-cni.v4/pkg/logging"
 	"gopkg.in/k8snetworkplumbingwg/multus-cni.v4/pkg/multus"
@@ -37,8 +31,6 @@ import (
 	"gopkg.in/k8snetworkplumbingwg/multus-cni.v4/pkg/server/api"
 	"gopkg.in/k8snetworkplumbingwg/multus-cni.v4/pkg/server/config"
 	"gopkg.in/k8snetworkplumbingwg/multus-cni.v4/pkg/types"
-
-	"github.com/prometheus/client_golang/prometheus/promhttp"
 )
 
 func main() {
@@ -141,80 +133,16 @@ func main() {
 }
 
 func startMultusDaemon(ctx context.Context, daemonConfig *srv.ControllerNetConf, ignoreReadinessIndicator bool) error {
-	if user, err := user.Current(); err != nil || user.Uid != "0" {
-		return fmt.Errorf("failed to run multus-daemon with root: %v, now running in uid: %s", err, user.Uid)
-	}
-
-	if err := srv.FilesystemPreRequirements(daemonConfig.SocketDir); err != nil {
-		return fmt.Errorf("failed to prepare the cni-socket for communicating with the shim: %w", err)
-	}
-
-	server, err := srv.NewCNIServer(daemonConfig, daemonConfig.ConfigFileContents, ignoreReadinessIndicator)
-	if err != nil {
-		return fmt.Errorf("failed to create the server: %v", err)
-	}
-
-	if daemonConfig.MetricsPort != nil {
-		go utilwait.UntilWithContext(ctx, func(_ context.Context) {
-			http.Handle("/metrics", promhttp.Handler())
-			logging.Debugf("metrics port: %d", *daemonConfig.MetricsPort)
-			logging.Debugf("metrics: %s", http.ListenAndServe(fmt.Sprintf(":%d", *daemonConfig.MetricsPort), nil))
-		}, 0)
-	}
-
-	l, err := srv.GetListener(api.SocketPath(daemonConfig.SocketDir))
-	if err != nil {
-		return fmt.Errorf("failed to start the CNI server using socket %s. Reason: %+v", api.SocketPath(daemonConfig.SocketDir), err)
-	}
-
-	server.Start(ctx, l)
-
-	go func() {
-		<-ctx.Done()
-		server.Shutdown(context.Background())
-	}()
-
+	_ = "STUB: not implemented"
 	return nil
 }
 
 func cniServerConfig(configFilePath string) (*srv.ControllerNetConf, error) {
-	path, err := filepath.Abs(configFilePath)
-	if err != nil {
-		return nil, fmt.Errorf("illegal path %s in server config path %s: %w", path, configFilePath, err)
-	}
-
-	configFileContents, err := os.ReadFile(path)
-	if err != nil {
-		return nil, err
-	}
-	return srv.LoadDaemonNetConf(configFileContents)
+	_ = "STUB: not implemented"
+	return nil, nil
 }
 
 func copyUserProvidedConfig(multusConfigPath string, cniConfigDir string) error {
-	path, err := filepath.Abs(multusConfigPath)
-	if err != nil {
-		return fmt.Errorf("illegal path %s in multusConfigPath %s: %w", path, multusConfigPath, err)
-	}
-
-	srcFile, err := os.Open(path)
-	if err != nil {
-		return fmt.Errorf("failed to open (READ only) file %s: %w", path, err)
-	}
-
-	dstFileName := cniConfigDir + "/" + filepath.Base(multusConfigPath)
-	dstFile, err := os.Create(dstFileName)
-	if err != nil {
-		return fmt.Errorf("creating copying file %s: %w", dstFileName, err)
-	}
-	nBytes, err := io.Copy(dstFile, srcFile)
-	if err != nil {
-		return fmt.Errorf("error copying file: %w", err)
-	}
-	srcFileInfo, err := srcFile.Stat()
-	if err != nil {
-		return fmt.Errorf("failed to stat the file: %w", err)
-	} else if nBytes != srcFileInfo.Size() {
-		return fmt.Errorf("error copying file - copied only %d bytes out of %d", nBytes, srcFileInfo.Size())
-	}
+	_ = "STUB: not implemented"
 	return nil
 }
